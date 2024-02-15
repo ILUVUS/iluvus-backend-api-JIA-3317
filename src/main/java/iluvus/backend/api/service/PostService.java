@@ -51,4 +51,29 @@ public class PostService {
             return false;
         }
     }
+
+    public boolean likePost(Map<String, String> data) {
+        try {
+            String postId = data.get("postId");
+            Post post = postRepository.findById(postId).orElse(null);
+            if (post == null) {
+                return false;
+            }
+            System.out.println("Post id: " + post.getId());
+            System.out.println("Post Content: " + post.getContent());
+            System.out.println("Post Author: " + post.getAuthor());
+            System.out.println("Post DateTime: " + post.getDateTime());
+            System.out.println("Post uplift: " + post.getUplift());
+
+            BigInteger uplift = post.getUplift();
+            BigInteger addedBigInteger = uplift.add(BigInteger.ONE);
+            post.setUplift(addedBigInteger);
+            postRepository.save(post);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        
+    }
 }

@@ -30,4 +30,19 @@ public class PostController {
         }
 
     }
+
+    @PostMapping(value = "/like", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> likePost(@RequestBody Map<String, String> data) {
+        boolean newPost = postService.likePost(data);
+        System.out.println("This is the Data! \n");
+        System.out.println(data);
+        if (newPost) {
+            return ResponseEntity.ok().body("Successfully Liked a post");
+        } else {
+            return ResponseEntity.badRequest().body("Like Function Unsuccessful");
+        }
+
+    }
+
+
 }
