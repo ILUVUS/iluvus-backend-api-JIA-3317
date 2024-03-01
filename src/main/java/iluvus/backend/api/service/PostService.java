@@ -8,10 +8,8 @@ import iluvus.backend.api.repository.CommunityRepository;
 import iluvus.backend.api.repository.PostRepository;
 import iluvus.backend.api.repository.UserRepository;
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.HashMap;
+import java.util.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +50,13 @@ public class PostService {
 
             Community community = communityRepository.findById(community_id).orElse(null);
             if (community == null) {
+                return null;
+            }
+
+//            Need to also add the tagged people list to the post.
+//            Database needs to be updated. Task is assign to someone else.
+//            will update once the database is updated!
+            if (tag(data.get("tag"), author_id) == false) {
                 return null;
             }
 
@@ -247,6 +252,45 @@ public class PostService {
                     postRepository.save(post);
                 }
             }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean tag(String tagging, String authorId) {
+        try {
+            String[] userList = tagging.split("\\s+");
+            User author = userRepository.findById(authorId).orElse(null);
+            String authorName = author.getFname() + " " + author.getLname();
+            for (int i = 0; i < userList.length; i ++) {
+                boolean isTagged = tagUser(userList[i], authorName);
+                if (!isTagged) return false;
+            }
+            return true;
+        }catch ( Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    private boolean tagUser(String authorName, String tagging ) {
+//
+//
+//        add the tagged user to the post database
+//
+//
+        try {
+            User toTagged = userRepository.findUserbyUsername(tagging);
+            List<HashMap<String, String>> notification = toTagged.getNotification();
+            HashMap<String, String > newNotification = new HashMap<>();
+            newNotification.put("date", "00:00:00");
+            newNotification.put("text", authorName + " tagged you in a Post.");
+            notification.add(newNotification);
+            toTagged.setNotification(notification);
+            userRepository.save(toTagged);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

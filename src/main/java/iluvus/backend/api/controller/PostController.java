@@ -105,7 +105,7 @@ public class PostController {
         }
     }
 
-@PostMapping(value = "/report", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/report", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> reportPost(@RequestBody Map<String, String> data) {
         boolean isReported = postService.reportPost(data);
         if (isReported) {
