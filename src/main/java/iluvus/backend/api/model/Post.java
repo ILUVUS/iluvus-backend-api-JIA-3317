@@ -89,7 +89,7 @@ public class Post {
         this.comments = new ArrayList<HashMap<String, String>>();
         this.likedBy = new ArrayList<String>();
         this.reportedBy = new ArrayList<String>();
-        this.tagged = new ArrayList<String>();
+        this.tagged = postDto.getTagged();
         this.medias = postDto.getMedias();
     }
 

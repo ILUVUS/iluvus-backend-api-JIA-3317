@@ -35,7 +35,6 @@ public class PostService {
             String dateTime = data.get("dateTime");
             String author_id = data.get("authorId");
             String community_id = data.get("communityId");
-
             String raw_media = data.get("medias");
 
             List<String> medias = processMedia(raw_media);
@@ -63,12 +62,21 @@ public class PostService {
                 return null;
             }
 
+            //            Need to also add the tagged people list to the post.
+//            Database needs to be updated. Task is assign to someone else.
+//            will update once the database is updated!
+            List<String> taggedUser = tag(data.get("tag"), author_id);
+            if (taggedUser == null) {
+                return null;
+            }
+
             PostDto postDto = new PostDto();
             postDto.setText(text);
             postDto.setDateTime(dateTime);
             postDto.setAuthor_id(author_id);
             postDto.setCommunity_id(community_id);
             postDto.setMedias(medias);
+            postDto.setTagged(taggedUser);
 
             Post post = new Post(postDto);
             postRepository.insert(post);
@@ -226,7 +234,6 @@ public class PostService {
             }
 
             if (reporter.equals(community.getOwner())) {
-                System.out.println("Already reported by the user!");
                 postRepository.delete(post);
                 return true;
             }
@@ -265,6 +272,42 @@ public class PostService {
             }
         }
         return medias;
+    }
+
+    public List<String> tag(String tagging, String authorId) {
+        List<String> taggedUser = new ArrayList<String>();
+        try {
+            String[] userList = tagging.split("\\s+");
+            User author = userRepository.findById(authorId).orElse(null);
+            String authorName = author.getFname() + " " + author.getLname();
+            for (String user : userList) {
+                boolean isTagged = tagUser(authorName, user);
+                if (!isTagged) return null;
+                taggedUser.add(user);
+            }
+            return taggedUser;
+        }catch ( Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    private boolean tagUser(String authorName, String tagging ) {
+        try {
+            User toTagged = userRepository.findUserbyUsername(tagging);
+            List<HashMap<String, String>> notification = toTagged.getNotification();
+            HashMap<String, String > newNotification = new HashMap<>();
+            newNotification.put("date", "00:00:00");
+            newNotification.put("text", authorName + " tagged you in a Post.");
+            notification.add(newNotification);
+            toTagged.setNotification(notification);
+            userRepository.save(toTagged);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

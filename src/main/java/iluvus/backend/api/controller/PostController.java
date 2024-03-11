@@ -35,12 +35,13 @@ public class PostController {
      */
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Post>> createPost(@RequestBody Map<String, String> data) {
-
         List<Post> newPost = postService.createPost(data);
 
         if (newPost != null) {
+            System.out.println("Successfully Created a post");
             return ResponseEntity.ok().body(newPost);
         } else {
+            System.out.println("Cannot Create post!");
             return ResponseEntity.badRequest().body(null);
         }
     }
