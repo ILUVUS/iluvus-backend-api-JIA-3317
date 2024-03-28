@@ -116,6 +116,7 @@ public class PostService {
                 post.setAuthor_id(fname, lname);
                 authorIdName.put(authorId, post.getAuthor_id());
             }
+
         }
         return posts;
     }
@@ -319,6 +320,7 @@ public class PostService {
         }
 
         List<Post> returningPost = new ArrayList<>();
+        List<Post> otherPost = new ArrayList<>();
 
         for (Post post : posts) {
             List<Integer> userInterest = user.getInterests();
@@ -327,8 +329,17 @@ public class PostService {
                     returningPost.add(post);
                     break;
                 }
+                else {
+                    otherPost.add(post);
+                    break;
+                }
             }
         }
+
+
+        // add otherPost after returningPost
+        returningPost.addAll(otherPost);
+
         HashMap<String, String> authorIdName = new HashMap<>();
         for (Post post : returningPost) {
             String authorId = post.getAuthor_id();
@@ -342,6 +353,8 @@ public class PostService {
                 authorIdName.put(authorId, post.getAuthor_id());
             }
         }
+
+
         return returningPost;
     }
 }
